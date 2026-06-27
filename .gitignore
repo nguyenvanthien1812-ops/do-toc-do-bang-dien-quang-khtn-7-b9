@@ -1,0 +1,19 @@
+# System files
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Local workspace files
+.agents/
+.gemini/
+brain/
+scratch/
+task.md
+implementation_plan.md
+walkthrough.md
+*.zip

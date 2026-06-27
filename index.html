@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thí nghiệm ảo 3D: Đo tốc độ bằng Cổng quang điện & Đồng hồ hiện số</title>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css?v=11">
+</head>
+<body>
+    <!-- Main 2D SVG Container (Visible by default) -->
+    <div id="canvas-2d-container" class="active">
+        <!-- Full width container for interactive 2D Vector simulation -->
+        <div class="simulation-2d-box">
+            <svg id="svg-sim" viewBox="50 -90 630 500" width="100%" height="100%">
+                <defs>
+                    <radialGradient id="ball-grad" cx="30%" cy="30%" r="70%">
+                        <stop offset="0%" stop-color="#ffffff" />
+                        <stop offset="25%" stop-color="#cbd5e1" />
+                        <stop offset="70%" stop-color="#475569" />
+                        <stop offset="100%" stop-color="#0f172a" />
+                    </radialGradient>
+                    <linearGradient id="track-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#ffffff" />
+                        <stop offset="25%" stop-color="#cbd5e1" />
+                        <stop offset="75%" stop-color="#64748b" />
+                        <stop offset="100%" stop-color="#334155" />
+                    </linearGradient>
+                    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.45"/>
+                    </filter>
+                    <filter id="laser-glow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                    </filter>
+                </defs>
+
+                <!-- Lab Table Surface -->
+                <rect x="20" y="360" width="760" height="40" fill="#334155" rx="5" filter="url(#shadow)"/>
+                <rect x="10" y="355" width="780" height="8" fill="#475569" rx="2"/>
+
+                <!-- Support Stand Base (left, at x=160) -->
+                <path d="M 130 355 L 190 355 L 180 340 L 140 340 Z" fill="#1e293b"/>
+                <!-- Support Stand Vertical Rod - extends all the way up to track bottom (world y=12) -->
+                <line x1="160" y1="340" x2="160" y2="12" stroke="#94a3b8" stroke-width="10" stroke-linecap="round"/>
+                <!-- Metal clamp at track attachment point -->
+                <rect x="146" y="6" width="28" height="16" rx="2" fill="#64748b"/>
+                <!-- Horizontal arm from rod tip to under the track start -->
+                <line x1="160" y1="12" x2="180" y2="12" stroke="#64748b" stroke-width="8" stroke-linecap="round"/>
+
+                <!-- Dynamic 2D Cable connections -->
+                <path id="svg-cable-a" d="" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+                <path id="svg-cable-b" d="" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+
+                <!-- Dynamic Incline Track Group (Pivot point at x=160, y=12) -->
+                <g id="svg-track-group" transform="rotate(4, 160, 12)">
+                    <!-- The track channel (Shifted to start at x=60, total length 550) -->
+                    <rect x="60" y="-12" width="550" height="24" rx="3" fill="url(#track-grad)" stroke="#475569" stroke-width="1.5"/>
+                    
+                    <!-- Ruler ticks (Populated by js) -->
+                    <g id="svg-ruler-ticks"></g>
+
+                    <!-- Electromagnet (1) (Shifted to local x=70) -->
+                    <g id="svg-magnet" transform="translate(70, -12)">
+                        <rect x="-12" y="-38" width="24" height="38" fill="#334155" rx="2"/>
+                        <rect x="-18" y="-30" width="36" height="22" fill="#f97316" rx="1"/> <!-- Copper coil -->
+                        <line x1="0" y1="0" x2="0" y2="10" stroke="#1e293b" stroke-width="5"/> <!-- Core tip -->
+                        <text x="0" y="-47" font-size="17" font-weight="bold" fill="#f8fafc" text-anchor="middle">(1)</text>
+                    </g>
+
+                    <!-- Steel Ball (2) - Made significantly larger (radius 18, shifted to local cx=85) -->
+                    <circle id="svg-ball" cx="85" cy="-30" r="18" fill="url(#ball-grad)" filter="url(#shadow)"/>
+                    <text id="svg-ball-label" x="85" y="-55" font-size="17" font-weight="bold" fill="#f8fafc" text-anchor="middle">(2)</text>
+
+                    <!-- Stopper block at the end of track (Shifted to local x=600) -->
+                    <rect x="600" y="-26" width="10" height="38" fill="#b45309" rx="1"/>
+
+                    <!-- Photogate A (3) -->
+                    <g id="svg-gate-a" transform="translate(180, 0)">
+                        <path d="M -16 -45 L -16 20 L -8 20 L -8 -25 L 8 -25 L 8 20 L 16 20 L 16 -45 Z" fill="#0f172a" filter="url(#shadow)"/>
+                        <rect x="-16" y="-45" width="32" height="10" fill="#2563eb" rx="1"/> <!-- Blue label -->
+                        <!-- Glowing laser beam -->
+                        <line id="svg-laser-a" x1="0" y1="-25" x2="0" y2="15" stroke="#ff3b30" stroke-width="3" filter="url(#laser-glow)"/>
+                        <text x="0" y="-55" font-size="17" font-weight="bold" fill="#3b82f6" text-anchor="middle">(3)</text>
+                    </g>
+
+                    <!-- Photogate B (4) -->
+                    <g id="svg-gate-b" transform="translate(480, 0)">
+                        <path d="M -16 -45 L -16 20 L -8 20 L -8 -25 L 8 -25 L 8 20 L 16 20 L 16 -45 Z" fill="#0f172a" filter="url(#shadow)"/>
+                        <rect x="-16" y="-45" width="32" height="10" fill="#ef4444" rx="1"/> <!-- Red label -->
+                        <!-- Glowing laser beam -->
+                        <line id="svg-laser-b" x1="0" y1="-25" x2="0" y2="15" stroke="#ff3b30" stroke-width="3" filter="url(#laser-glow)"/>
+                        <text x="0" y="-55" font-size="17" font-weight="bold" fill="#f87171" text-anchor="middle">(4)</text>
+                    </g>
+                </g>
+
+                <!-- Support stand at the end (dynamic) -->
+                <g id="svg-support-end">
+                    <line id="svg-support-rod" x1="660" y1="220" x2="660" y2="355" stroke="#94a3b8" stroke-width="8"/>
+                    <rect id="svg-support-clamp" x="650" y="205" width="20" height="16" rx="1" fill="#475569"/>
+                </g>
+
+                <!-- Switch Box (5) (Shifted right) -->
+                <g id="svg-switch" transform="translate(220, 315)">
+                    <rect x="0" y="0" width="55" height="40" rx="4" fill="#1e293b" stroke="#475569" stroke-width="2" filter="url(#shadow)"/>
+                    <line id="svg-switch-lever" x1="27.5" y1="14" x2="21.5" y2="5" stroke="#34c759" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="27.5" cy="17" r="5" fill="#64748b"/>
+                    <text x="27.5" y="58" font-size="17" font-weight="bold" fill="#f8fafc" text-anchor="middle">(5)</text>
+                </g>
+
+                <!-- Timer Box (6) (Shifted right) -->
+                <g id="svg-timer" transform="translate(360, 245)">
+                    <rect x="0" y="0" width="210" height="110" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="4" filter="url(#shadow)"/>
+                    <rect x="8" y="8" width="194" height="52" rx="4" fill="#000"/>
+                    <text id="svg-led-display" x="190" y="45" fill="#ef4444" font-family="Share Tech Mono" font-size="38" font-weight="bold" text-anchor="end">0.000</text>
+                    
+                    <text x="14" y="22" fill="rgba(239, 68, 68, 0.4)" font-family="Share Tech Mono" font-size="10">MODE: A-B</text>
+                    <text x="190" y="22" fill="rgba(239, 68, 68, 0.4)" font-family="Share Tech Mono" font-size="10" text-anchor="end">UNIT: s</text>
+                    <circle cx="18" cy="50" r="3" fill="#ef4444"/>
+                    <text x="25" y="53" fill="#94a3b8" font-size="8" font-weight="bold">A&lt;-&gt;B</text>
+
+                    <!-- Sockets A and B plugs -->
+                    <circle id="svg-socket-a" cx="45" cy="84" r="10" fill="#0f172a"/>
+                    <text x="45" y="101" fill="#475569" font-size="9" font-weight="bold" text-anchor="middle">Cổng A</text>
+
+                    <circle id="svg-socket-b" cx="165" cy="84" r="10" fill="#0f172a"/>
+                    <text x="165" y="101" fill="#475569" font-size="9" font-weight="bold" text-anchor="middle">Cổng B</text>
+
+                    <text x="105" y="130" font-size="17" font-weight="bold" fill="#f8fafc" text-anchor="middle">(6)</text>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Floating Timer shown in 3D mode (center-top overlay) -->
+    <div id="floating-timer-3d">
+        <div class="ft-label">ĐỒNG HỒ ĐO THỜI GIAN</div>
+        <div class="ft-value" id="ft-value">0.000</div>
+    </div>
+
+    <!-- Main 3D Canvas Container (Hidden by default) -->
+    <div id="canvas-container" style="display: none;"></div>
+
+    <!-- Loading Screen -->
+    <div id="loader" class="loader-container">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <h2>Đang khởi tạo Phòng thí nghiệm 3D...</h2>
+            <p>Vui lòng chờ trong giây lát</p>
+        </div>
+    </div>
+
+    <!-- UI Overlay HUD -->
+    <div id="hud-overlay" class="hud-container">
+        
+        <!-- Header -->
+        <header class="main-header glass-panel">
+            <div class="header-logo">
+                <i class="fa-solid fa-microchip pulse-icon"></i>
+            </div>
+            <div class="header-text">
+                <h1>Đo tốc độ bằng Cổng quang điện & Đồng hồ hiện số</h1>
+            </div>
+            <div class="view-toggle-wrapper">
+                <button id="btn-mode-2d" class="btn btn-mode active"><i class="fa-solid fa-image"></i> Sơ đồ 2D SGK</button>
+                <button id="btn-mode-3d" class="btn btn-mode"><i class="fa-solid fa-cube"></i> Mô hình 3D</button>
+                <button id="btn-fullscreen" class="btn btn-mode"><i class="fa-solid fa-expand"></i> Toàn màn hình</button>
+            </div>
+        </header>
+
+        <!-- Right Side: Control Panels & Comparisons -->
+        <div class="sidebar-container">
+            
+            <!-- Simulation Controls -->
+            <section class="glass-panel control-section">
+                <h3 class="section-title"><i class="fa-solid fa-sliders"></i> Thiết lập Thí nghiệm</h3>
+                
+                <div class="control-group">
+                    <div class="label-val">
+                        <span class="label-text">Góc nghiêng máng trượt (α):</span>
+                        <span class="val-text" id="val-angle">4.0°</span>
+                    </div>
+                    <input type="range" id="input-angle" min="1" max="10" step="0.5" value="4.0">
+                    <div class="range-ticks">
+                        <span>1°</span>
+                        <span>5°</span>
+                        <span>10°</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="label-val">
+                        <span class="label-text">Vị trí Cổng quang điện A:</span>
+                        <span class="val-text" id="val-gate-a">20 cm</span>
+                    </div>
+                    <input type="range" id="input-gate-a" min="10" max="50" step="1" value="20">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-val">
+                        <span class="label-text">Vị trí Cổng quang điện B:</span>
+                        <span class="val-text" id="val-gate-b">80 cm</span>
+                    </div>
+                    <input type="range" id="input-gate-b" min="60" max="95" step="1" value="80">
+                </div>
+
+                <div class="distance-display">
+                    <span class="label">Quãng đường (s = s<sub>B</sub> - s<sub>A</sub>):</span>
+                    <span class="value" id="val-distance">60.0 cm (0.600 m)</span>
+                </div>
+
+                <hr class="separator">
+
+                <div class="action-buttons">
+                    <button id="btn-power" class="btn btn-danger">
+                        <i class="fa-solid fa-power-off"></i> <span id="power-text">Ngắt Nam châm (Thả bi)</span>
+                    </button>
+                    <button id="btn-reset" class="btn btn-secondary">
+                        <i class="fa-solid fa-rotate-left"></i> Đặt lại (Reset)
+                    </button>
+                </div>
+            </section>
+
+            <!-- Digital Timer (Representing Device 6) -->
+            <section class="glass-panel timer-device-panel">
+                <div class="device-bezel">
+                    <div class="device-brand">MC-964 DIGITAL TIMER</div>
+                    <div class="device-screen-wrapper">
+                        <div class="screen-label-top">
+                            <span>MODE: A ↔ B</span>
+                            <span>UNIT: s (giây)</span>
+                        </div>
+                        <div class="screen-led" id="led-timer">0.000</div>
+                        <div class="screen-led-glow"></div>
+                        <div class="screen-label-bottom">
+                            <span class="indicator active" id="indicator-ab"><span class="dot red"></span> A ↔ B</span>
+                            <span class="indicator" id="indicator-a"><span class="dot"></span> A</span>
+                            <span class="indicator" id="indicator-b"><span class="dot"></span> B</span>
+                        </div>
+                    </div>
+                    <div class="device-inputs">
+                        <div class="port-jack connected"><span class="port-label">Cổng A</span></div>
+                        <div class="port-jack connected"><span class="port-label">Cổng B</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pedagogical Corner: Manual Timing vs Photogate -->
+            <section class="glass-panel pedagogy-section">
+                <h3 class="section-title"><i class="fa-solid fa-graduation-cap"></i> Điểm nhấn Sư phạm</h3>
+                <p class="pedagogy-intro">Hãy thử tự đo thời gian bằng tay để kiểm chứng sai số so với cổng quang điện!</p>
+                
+                <div class="manual-stopwatch-box">
+                    <div class="manual-time-display" id="manual-timer-display">0.000</div>
+                    <button id="btn-manual-time" class="btn btn-warning btn-full">
+                        <i class="fa-solid fa-stopwatch"></i> Bấm giờ Thủ công (Phím SPACE)
+                    </button>
+                </div>
+
+                <div class="comparison-results" id="comparison-results" style="display: none;">
+                    <h4>BẢNG SO SÁNH KẾT QUẢ ĐO</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Phương pháp</th>
+                                <th>Thời gian (t)</th>
+                                <th>Độ chính xác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="highlight-row-auto">
+                                <td><i class="fa-solid fa-microchip"></i> Cổng Quang Điện</td>
+                                <td id="comp-time-auto">0.000 s</td>
+                                <td class="text-success"><i class="fa-solid fa-circle-check"></i> Tuyệt đối</td>
+                            </tr>
+                            <tr class="highlight-row-manual">
+                                <td><i class="fa-solid fa-hand-pointer"></i> Bấm tay (Thủ công)</td>
+                                <td id="comp-time-manual">0.000 s</td>
+                                <td id="comp-precision">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="error-analysis">
+                        <div class="error-item">
+                            <span class="err-lbl">Sai số tuyệt đối (&Delta;t):</span>
+                            <span class="err-val" id="comp-error-abs">0.000 s</span>
+                        </div>
+                        <div class="error-item">
+                            <span class="err-lbl">Phần trăm sai số (%):</span>
+                            <span class="err-val" id="comp-error-rel">0.0%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Insight box -->
+                    <div class="pedagogy-insight" id="pedagogy-insight">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span id="insight-text">Bấm thả nam châm để bắt đầu cuộc đua đo thời gian!</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Left Side: Sound & Help -->
+        <div class="left-controls-container">
+            <!-- Sound & Help -->
+            <div class="bottom-utility-buttons">
+                <button id="btn-sound" class="btn btn-circle glass-btn" title="Bật/Tắt Âm thanh">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button id="btn-data-table" class="btn btn-circle glass-btn" title="Bảng số liệu thực hành">
+                    <i class="fa-solid fa-table"></i>
+                </button>
+                <button id="btn-help" class="btn btn-circle glass-btn" title="Hướng dẫn sử dụng">
+                    <i class="fa-solid fa-question"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal-container">
+        <div class="modal-content glass-panel">
+            <span class="modal-close" id="btn-close-modal">&times;</span>
+            <h2><i class="fa-solid fa-circle-question text-warning"></i> Hướng dẫn Thí nghiệm ảo</h2>
+            <div class="modal-body">
+                <ol>
+                    <li><strong>Điều chỉnh Máng nghiêng:</strong> Dùng thanh trượt <em>Góc nghiêng</em> để tăng hoặc giảm độ dốc của máng trượt (từ 1° đến 10°).</li>
+                    <li><strong>Tùy chỉnh Quãng đường s:</strong> Kéo trực tiếp các <strong>Cổng quang điện A và B</strong> dọc theo thước đo 3D (hoặc điều chỉnh thanh trượt tương ứng trên bảng điều khiển) để đặt vị trí. Khoảng cách $s = s_B - s_A$ sẽ tự động hiển thị.</li>
+                    <li><strong>Thả bi chuyển động:</strong>
+                        <ul>
+                            <li>Nhấp nút <strong>"Ngắt Nam châm (Thả bi)"</strong> hoặc nhấp vào công tắc cơ học màu đen trên giá đỡ 3D để ngắt dòng điện.</li>
+                            <li>Nam châm điện mất từ tính sẽ nhả viên bi lăn xuống dưới tác dụng của trọng lực.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Ghi nhận Thời gian:</strong>
+                        <ul>
+                            <li>Khi bi lăn qua Cổng A: Đồng hồ bắt đầu tự động đếm.</li>
+                            <li>Khi bi lăn qua Cổng B: Đồng hồ dừng lại và hiển thị thời gian chính xác đến phần nghìn giây.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Thử thách Bấm giờ bằng tay:</strong>
+                        <ul>
+                            <li>Bấm nút <strong>"Bấm giờ Thủ công (Phím SPACE)"</strong> khi bi bắt đầu chuyển động, và bấm lần nữa khi bi qua cổng B.</li>
+                            <li>Hệ thống sẽ hiển thị bảng so sánh trực quan và phân tích sai số để chứng minh độ chính xác vượt trội của cổng quang điện tự động so với phản xạ bấm tay của con người.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Điều khiển Camera:</strong> Giữ chuột trái để xoay không gian 3D, giữ chuột phải để di chuyển vị trí, cuộn bánh xe để phóng to/thu nhỏ. Bạn cũng có thể dùng các nút góc nhìn nhanh.</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-close-modal-ok">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SGK Photo Modal -->
+    <div id="sgk-modal" class="modal-container">
+        <div class="modal-content glass-panel" style="width: 700px; max-width: 95%;">
+            <span class="modal-close" id="btn-close-sgk-modal">&times;</span>
+            <h2><i class="fa-solid fa-book-open text-warning"></i> Sơ đồ thực tế SGK Hình 9.3</h2>
+            <div class="modal-body" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; min-height: 250px;">
+                <img src="hinh9.3.png" alt="Hình 9.3 SGK Khoa học tự nhiên 7" id="img-sgk-modal-ref" onerror="showDefaultReference(this)" style="max-width: 100%; max-height: 380px; border-radius: 8px; border: 1px solid var(--border-glass); display: block;">
+                <div id="img-fallback-message-modal" class="img-fallback" style="position: static; display: none;">
+                    <i class="fa-solid fa-image fa-3xl" style="color: var(--accent-yellow); margin-bottom: 15px; font-size: 3rem;"></i>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; max-width: 320px;">
+                        Không tìm thấy tệp ảnh <code>hinh9.3.png</code>.<br>
+                        Hãy chụp hình 9.3 trong SGK, đổi tên thành <code>hinh9.3.png</code> và sao chép vào thư mục dự án để hiển thị tại đây.
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-close-sgk-modal-ok">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Modal -->
+    <div id="data-table-modal" class="modal-container">
+        <div class="modal-content glass-panel" style="width: 750px; max-width: 95%;">
+            <span class="modal-close" id="btn-close-data-table-modal">&times;</span>
+            <h2><i class="fa-solid fa-table text-warning"></i> Báo cáo kết quả đo & Tính giá trị trung bình</h2>
+            <div class="modal-body">
+                <p style="margin-bottom: 15px; font-size: 0.85rem; color: var(--text-secondary);">
+                    Thực hiện thí nghiệm tối thiểu 3 lần với cùng một điều kiện để lấy giá trị trung bình.
+                </p>
+                <table class="comparison-table" id="table-report-data">
+                    <thead>
+                        <tr>
+                            <th>Lần đo</th>
+                            <th>Góc nghiêng (&alpha;)</th>
+                            <th>Quãng đường s (m)</th>
+                            <th>Thời gian t (s)</th>
+                            <th>Tốc độ v (m/s)</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-table-body">
+                        <!-- Dynamically populated rows -->
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: rgba(0, 122, 255, 0.1); font-weight: bold; border-top: 2px solid var(--border-glass);">
+                            <td>Trung bình (&oline;)</td>
+                            <td>--</td>
+                            <td id="avg-s">--</td>
+                            <td id="avg-t">--</td>
+                            <td id="avg-v">--</td>
+                            <td>--</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="modal-footer" style="gap: 10px;">
+                <button class="btn btn-warning" id="btn-record-data"><i class="fa-solid fa-square-plus"></i> Ghi số liệu hiện tại</button>
+                <button class="btn btn-danger" id="btn-clear-report-data"><i class="fa-solid fa-trash-can"></i> Xóa dữ liệu</button>
+                <button class="btn btn-secondary" id="btn-close-data-table-modal-ok">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Include Three.js & OrbitControls via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Custom App Script -->
+    <script src="app.js?v=11"></script>
+</body>
+</html>
