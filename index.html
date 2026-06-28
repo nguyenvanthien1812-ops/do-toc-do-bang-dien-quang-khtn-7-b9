@@ -11,14 +11,14 @@
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=19">
 </head>
 <body>
     <!-- Main 2D SVG Container (Visible by default) -->
     <div id="canvas-2d-container" class="active">
         <!-- Full width container for interactive 2D Vector simulation -->
         <div class="simulation-2d-box">
-            <svg id="svg-sim" viewBox="50 -90 630 500" width="100%" height="100%">
+            <svg id="svg-sim" viewBox="55 -75 620 460" width="100%" height="100%">
                 <defs>
                     <radialGradient id="ball-grad" cx="30%" cy="30%" r="70%">
                         <stop offset="0%" stop-color="#ffffff" />
@@ -71,12 +71,12 @@
                         <rect x="-12" y="-38" width="24" height="38" fill="#334155" rx="2"/>
                         <rect x="-18" y="-30" width="36" height="22" fill="#f97316" rx="1"/> <!-- Copper coil -->
                         <line x1="0" y1="0" x2="0" y2="10" stroke="#1e293b" stroke-width="5"/> <!-- Core tip -->
-                        <text x="0" y="-47" font-size="17" font-weight="bold" fill="#f8fafc" text-anchor="middle">(1)</text>
+                        <text x="0" y="-42" font-size="17" font-weight="bold" fill="#0f172a" text-anchor="middle">(1)</text>
                     </g>
 
                     <!-- Steel Ball (2) - Made significantly larger (radius 18, shifted to local cx=85) -->
                     <circle id="svg-ball" cx="85" cy="-30" r="18" fill="url(#ball-grad)" filter="url(#shadow)"/>
-                    <text id="svg-ball-label" x="85" y="-55" font-size="17" font-weight="bold" fill="#f8fafc" text-anchor="middle">(2)</text>
+                    <text id="svg-ball-label" x="85" y="-55" font-size="17" font-weight="bold" fill="#0f172a" text-anchor="middle">(2)</text>
 
                     <!-- Stopper block at the end of track (Shifted to local x=600) -->
                     <rect x="600" y="-26" width="10" height="38" fill="#b45309" rx="1"/>
@@ -87,7 +87,7 @@
                         <rect x="-16" y="-45" width="32" height="10" fill="#2563eb" rx="1"/> <!-- Blue label -->
                         <!-- Glowing laser beam -->
                         <line id="svg-laser-a" x1="0" y1="-25" x2="0" y2="15" stroke="#ff3b30" stroke-width="3" filter="url(#laser-glow)"/>
-                        <text x="0" y="-55" font-size="17" font-weight="bold" fill="#3b82f6" text-anchor="middle">(3)</text>
+                        <text x="0" y="-53" font-size="17" font-weight="bold" fill="#1d4ed8" text-anchor="middle">(3)</text>
                     </g>
 
                     <!-- Photogate B (4) -->
@@ -96,13 +96,13 @@
                         <rect x="-16" y="-45" width="32" height="10" fill="#ef4444" rx="1"/> <!-- Red label -->
                         <!-- Glowing laser beam -->
                         <line id="svg-laser-b" x1="0" y1="-25" x2="0" y2="15" stroke="#ff3b30" stroke-width="3" filter="url(#laser-glow)"/>
-                        <text x="0" y="-55" font-size="17" font-weight="bold" fill="#f87171" text-anchor="middle">(4)</text>
+                        <text x="0" y="-53" font-size="17" font-weight="bold" fill="#dc2626" text-anchor="middle">(4)</text>
                     </g>
                 </g>
 
                 <!-- Support stand at the end (dynamic) -->
                 <g id="svg-support-end">
-                    <line id="svg-support-rod" x1="660" y1="220" x2="660" y2="355" stroke="#94a3b8" stroke-width="8"/>
+                    <line id="svg-support-rod" x1="660" y1="220" x2="660" y2="355" stroke="#64748b" stroke-width="8"/>
                     <rect id="svg-support-clamp" x="650" y="205" width="20" height="16" rx="1" fill="#475569"/>
                 </g>
 
@@ -111,7 +111,7 @@
                     <rect x="0" y="0" width="55" height="40" rx="4" fill="#1e293b" stroke="#475569" stroke-width="2" filter="url(#shadow)"/>
                     <line id="svg-switch-lever" x1="27.5" y1="14" x2="21.5" y2="5" stroke="#34c759" stroke-width="5" stroke-linecap="round"/>
                     <circle cx="27.5" cy="17" r="5" fill="#64748b"/>
-                    <text x="27.5" y="58" font-size="17" font-weight="bold" fill="#f8fafc" text-anchor="middle">(5)</text>
+                    <text x="27.5" y="58" font-size="17" font-weight="bold" fill="#ffffff" text-anchor="middle">(5)</text>
                 </g>
 
                 <!-- Timer Box (6) (Shifted right) -->
@@ -120,19 +120,19 @@
                     <rect x="8" y="8" width="194" height="52" rx="4" fill="#000"/>
                     <text id="svg-led-display" x="190" y="45" fill="#ef4444" font-family="Share Tech Mono" font-size="38" font-weight="bold" text-anchor="end">0.000</text>
                     
-                    <text x="14" y="22" fill="rgba(239, 68, 68, 0.4)" font-family="Share Tech Mono" font-size="10">MODE: A-B</text>
-                    <text x="190" y="22" fill="rgba(239, 68, 68, 0.4)" font-family="Share Tech Mono" font-size="10" text-anchor="end">UNIT: s</text>
+                    <text x="14" y="22" fill="rgba(239, 68, 68, 0.6)" font-family="Share Tech Mono" font-size="10">MODE: A-B</text>
+                    <text x="190" y="22" fill="rgba(239, 68, 68, 0.6)" font-family="Share Tech Mono" font-size="10" text-anchor="end">UNIT: s</text>
                     <circle cx="18" cy="50" r="3" fill="#ef4444"/>
                     <text x="25" y="53" fill="#94a3b8" font-size="8" font-weight="bold">A&lt;-&gt;B</text>
 
                     <!-- Sockets A and B plugs -->
                     <circle id="svg-socket-a" cx="45" cy="84" r="10" fill="#0f172a"/>
-                    <text x="45" y="101" fill="#475569" font-size="9" font-weight="bold" text-anchor="middle">Cổng A</text>
+                    <text x="45" y="101" fill="#0f172a" font-size="10" font-weight="bold" text-anchor="middle">Cổng A</text>
 
                     <circle id="svg-socket-b" cx="165" cy="84" r="10" fill="#0f172a"/>
-                    <text x="165" y="101" fill="#475569" font-size="9" font-weight="bold" text-anchor="middle">Cổng B</text>
+                    <text x="165" y="101" fill="#0f172a" font-size="10" font-weight="bold" text-anchor="middle">Cổng B</text>
 
-                    <text x="105" y="130" font-size="17" font-weight="bold" fill="#f8fafc" text-anchor="middle">(6)</text>
+                    <text x="105" y="130" font-size="17" font-weight="bold" fill="#ffffff" text-anchor="middle">(6)</text>
                 </g>
             </svg>
         </div>
@@ -168,9 +168,8 @@
                 <h1>Đo tốc độ bằng Cổng quang điện & Đồng hồ hiện số</h1>
             </div>
             <div class="view-toggle-wrapper">
-                <button id="btn-mode-2d" class="btn btn-mode active"><i class="fa-solid fa-image"></i> Sơ đồ 2D SGK</button>
-                <button id="btn-mode-3d" class="btn btn-mode"><i class="fa-solid fa-cube"></i> Mô hình 3D</button>
-                <button id="btn-fullscreen" class="btn btn-mode"><i class="fa-solid fa-expand"></i> Toàn màn hình</button>
+                <button id="btn-mode-2d" class="btn btn-mode active" style="display:none;"></button>
+                <button id="btn-mode-3d" class="btn btn-mode" style="display:none;"></button>
             </div>
         </header>
 
@@ -179,7 +178,12 @@
             
             <!-- Simulation Controls -->
             <section class="glass-panel control-section">
-                <h3 class="section-title"><i class="fa-solid fa-sliders"></i> Thiết lập Thí nghiệm</h3>
+                <h3 class="section-title">
+                    <span><i class="fa-solid fa-sliders"></i> Thiết lập Thí nghiệm</span>
+                    <button id="btn-fullscreen" class="btn btn-circle glass-btn btn-fullscreen-sidebar" title="Toàn màn hình">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </h3>
                 
                 <div class="control-group">
                     <div class="label-val">
@@ -304,6 +308,11 @@
                     </div>
                 </div>
             </section>
+            
+            <!-- Author Info -->
+            <div class="sidebar-author-info">
+                <i class="fa-solid fa-user-tie"></i> Tác giả: Nguyễn Thiện - <i class="fa-solid fa-phone"></i> SĐT: 0988250112
+            </div>
         </div>
 
         <!-- Left Side: Sound & Help -->
@@ -331,10 +340,10 @@
             <div class="modal-body">
                 <ol>
                     <li><strong>Điều chỉnh Máng nghiêng:</strong> Dùng thanh trượt <em>Góc nghiêng</em> để tăng hoặc giảm độ dốc của máng trượt (từ 1° đến 10°).</li>
-                    <li><strong>Tùy chỉnh Quãng đường s:</strong> Kéo trực tiếp các <strong>Cổng quang điện A và B</strong> dọc theo thước đo 3D (hoặc điều chỉnh thanh trượt tương ứng trên bảng điều khiển) để đặt vị trí. Khoảng cách $s = s_B - s_A$ sẽ tự động hiển thị.</li>
+                    <li><strong>Tùy chỉnh Quãng đường s:</strong> Điều chỉnh các thanh trượt tương ứng trên bảng điều khiển để đặt vị trí cho các <strong>Cổng quang điện A và B</strong>. Khoảng cách $s = s_B - s_A$ sẽ tự động hiển thị.</li>
                     <li><strong>Thả bi chuyển động:</strong>
                         <ul>
-                            <li>Nhấp nút <strong>"Ngắt Nam châm (Thả bi)"</strong> hoặc nhấp vào công tắc cơ học màu đen trên giá đỡ 3D để ngắt dòng điện.</li>
+                            <li>Nhấp nút <strong>"Ngắt Nam châm (Thả bi)"</strong> để ngắt dòng điện.</li>
                             <li>Nam châm điện mất từ tính sẽ nhả viên bi lăn xuống dưới tác dụng của trọng lực.</li>
                         </ul>
                     </li>
@@ -350,7 +359,6 @@
                             <li>Hệ thống sẽ hiển thị bảng so sánh trực quan và phân tích sai số để chứng minh độ chính xác vượt trội của cổng quang điện tự động so với phản xạ bấm tay của con người.</li>
                         </ul>
                     </li>
-                    <li><strong>Điều khiển Camera:</strong> Giữ chuột trái để xoay không gian 3D, giữ chuột phải để di chuyển vị trí, cuộn bánh xe để phóng to/thu nhỏ. Bạn cũng có thể dùng các nút góc nhìn nhanh.</li>
                 </ol>
             </div>
             <div class="modal-footer">
@@ -428,6 +436,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <!-- Custom App Script -->
-    <script src="app.js?v=11"></script>
+    <script src="app.js?v=19"></script>
 </body>
 </html>

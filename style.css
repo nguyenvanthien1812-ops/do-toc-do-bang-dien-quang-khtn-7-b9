@@ -122,30 +122,43 @@ body, html {
     pointer-events: auto;
 }
 
-/* Header styling */
+/* Header styling - Shifted right to prevent overlap with top-left magnet. Transformed to Light Glassmorphism. */
 .main-header {
     display: flex;
     align-items: center;
-    padding: 15px 25px;
-    min-width: 680px;
+    padding: 10px 22px;
+    min-width: 650px;
     max-width: fit-content;
     margin-bottom: 20px;
+    margin-left: 210px;
+    
+    /* Premium Light Glassmorphism Overrides */
+    background: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(16px) saturate(140%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+}
+
+.main-header:hover {
+    border-color: rgba(0, 122, 255, 0.25) !important;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08) !important;
 }
 
 .header-logo {
-    width: 44px;
-    height: 44px;
-    background: rgba(0, 122, 255, 0.15);
-    border: 1px solid rgba(0, 122, 255, 0.3);
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 122, 255, 0.08);
+    border: 1px solid rgba(0, 122, 255, 0.18);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-right: 15px;
+    margin-right: 12px;
 }
 
 .header-logo i {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: var(--accent-blue);
 }
 
@@ -154,7 +167,7 @@ body, html {
 }
 
 @keyframes iconPulse {
-    0% { transform: scale(0.95); opacity: 0.8; }
+    0% { transform: scale(0.95); opacity: 0.85; }
     100% { transform: scale(1.05); opacity: 1; }
 }
 
@@ -163,23 +176,40 @@ body, html {
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    background: linear-gradient(135deg, #fff 40%, #007aff);
+    background: linear-gradient(135deg, #0f172a 20%, #1e40af 80%, #2563eb 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .header-text p {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
-    margin-top: 2px;
+    font-size: 0.72rem;
+    color: #475569;
+    margin-top: 3px;
+    font-weight: 600;
 }
 
-/* Right Sidebar */
+.header-text p i {
+    color: var(--accent-blue);
+    margin-right: 2px;
+}
+
+/* Fullscreen mode button styles within light header */
+.main-header .btn-mode {
+    background: rgba(0, 122, 255, 0.08) !important;
+    color: #007aff !important;
+    border: 1px solid rgba(0, 122, 255, 0.18) !important;
+}
+
+.main-header .btn-mode:hover {
+    background: rgba(0, 122, 255, 0.15) !important;
+    color: #0056b3 !important;
+}
+
 .sidebar-container {
     position: absolute;
     right: 20px;
     top: 20px;
-    width: 300px;
+    width: 350px;
     overflow: visible; /* NO SCROLL */
     display: flex;
     flex-direction: column;
@@ -208,7 +238,7 @@ body, html {
 }
 
 .section-title {
-    font-size: 1.05rem;
+    font-size: 1.2rem;
     font-weight: 700;
     display: flex;
     align-items: center;
@@ -220,7 +250,7 @@ body, html {
 
 .section-title i {
     color: var(--accent-blue);
-    font-size: 1.05rem;
+    font-size: 1.2rem;
 }
 
 /* Input Ranges Control Styling */
@@ -231,19 +261,20 @@ body, html {
 .label-val {
     display: flex;
     justify-content: space-between;
-    font-size: 0.95rem;
+    font-size: 1.08rem;
     margin-bottom: 8px;
 }
 
 .label-text {
-    color: var(--text-secondary);
+    color: var(--text-primary); /* make labels brighter (white) instead of secondary grey for extra visibility */
+    font-weight: 600;
 }
 
 .val-text {
     font-family: var(--font-mono);
     color: var(--accent-blue);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 1.15rem;
 }
 
 input[type="range"] {
@@ -314,16 +345,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
 /* Buttons */
 .action-buttons {
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .btn {
-    padding: 10px 16px;
+    padding: 12px 18px;
     border: none;
     border-radius: var(--radius-md);
     font-family: var(--font-sans);
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 700; /* bolder text for classroom project visibility */
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -400,12 +431,12 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .device-brand {
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     font-weight: 700;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     letter-spacing: 2px;
     text-align: center;
-    opacity: 0.7;
+    opacity: 0.9;
 }
 
 .device-screen-wrapper {
@@ -421,16 +452,16 @@ input[type="range"]::-webkit-slider-thumb:hover {
     display: flex;
     justify-content: space-between;
     font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: rgba(255, 59, 48, 0.4);
+    font-size: 0.85rem;
+    color: rgba(255, 59, 48, 0.5);
     margin-bottom: 4px;
 }
 
 .screen-led {
     font-family: var(--font-mono);
-    font-size: 2.8rem;
+    font-size: 3.4rem;
     color: var(--accent-red);
-    text-shadow: 0 0 10px var(--accent-red-glow);
+    text-shadow: 0 0 12px var(--accent-red-glow);
     text-align: right;
     font-weight: 800;
     line-height: 1;
@@ -459,7 +490,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     gap: 15px;
     font-family: var(--font-sans);
     font-weight: 600;
-    font-size: 0.65rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
     margin-top: 8px;
 }
@@ -521,8 +552,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .port-label {
-    font-size: 0.65rem;
-    color: var(--text-secondary);
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 /* Pedagogy stopwatch section */
@@ -655,7 +687,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     position: absolute;
     left: 20px;
     top: 130px; /* spacing below header */
-    width: 250px;
+    width: 44px;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -693,10 +725,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 0 10px var(--accent-blue-glow);
 }
 
-/* Utility buttons at bottom left */
+/* Utility buttons at bottom left - Stacked vertically */
 .bottom-utility-buttons {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .btn-circle {
@@ -889,8 +922,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
     display: none; /* toggled by active class */
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle at center, #1b253b, #0f1624);
-    padding: 95px 330px 15px 15px; /* compact padding to maximize SVG space */
+    background: radial-gradient(circle at center, #ffffff 40%, #e6edf8 100%);
+    padding: 75px 375px 10px 10px; /* reduced padding to maximize SVG space */
     pointer-events: auto;
     box-sizing: border-box;
 }
@@ -912,11 +945,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
     width: 100%;
     height: 100%;
     display: flex;
-    background: rgba(15, 23, 42, 0.4);
-    border: 1px solid var(--border-glass);
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: var(--radius-lg);
     padding: 15px;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03), inset 0 0 30px rgba(255, 255, 255, 0.6);
     align-items: center;
     justify-content: center;
     overflow: hidden; /* Prevent child overflow */
@@ -1045,6 +1078,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
     display: none !important;
 }
 
+/* Ẩn nút chuyển đổi 2D và 3D (chỉ giữ lại mô hình 2D) */
+#btn-mode-2d, #btn-mode-3d {
+    display: none !important;
+}
+
 /* =====================================================
    3D MODE LAYOUT — sidebar nhỏ gọn bên phải, KHÔNG che canvas
    ===================================================== */
@@ -1114,4 +1152,52 @@ body.mode-3d .section-title {
 #floating-timer-3d .ft-value.ft-green {
     color: #34c759;
     text-shadow: 0 0 15px rgba(52, 199, 89, 0.6);
+}
+
+/* Sidebar Author Info Styling - Light Card with High Contrast */
+.sidebar-author-info {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background: rgba(0, 122, 255, 0.06);
+    border: 1px solid rgba(0, 122, 255, 0.16);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: #0f172a; /* high contrast dark text */
+    text-align: center;
+    font-weight: 700; /* bold text */
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.05);
+}
+
+.sidebar-author-info i {
+    color: var(--accent-blue);
+}
+
+/* Fullscreen Sidebar Button Style */
+.btn-fullscreen-sidebar {
+    background: rgba(0, 122, 255, 0.08) !important;
+    border: 1px solid rgba(0, 122, 255, 0.18) !important;
+    color: var(--accent-blue) !important;
+    border-radius: var(--radius-md) !important;
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    margin-left: auto; /* Push to the far right of the section title */
+    padding: 0 !important;
+    min-width: auto !important;
+}
+
+.btn-fullscreen-sidebar:hover {
+    background: rgba(0, 122, 255, 0.15) !important;
+    color: #0056b3 !important;
+    border-color: rgba(0, 122, 255, 0.3) !important;
+    transform: scale(1.05);
 }
